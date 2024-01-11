@@ -24,7 +24,7 @@ class DriversPayableTimeController extends Controller
         $this->store($drivers);
         return view('drivers.times', compact('drivers'));
     }
-    public function store($drivers)
+    public function store($drivers = [])
     {
         
         foreach($drivers as $key => $driver_trip) {

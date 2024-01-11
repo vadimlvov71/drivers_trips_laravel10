@@ -25,3 +25,6 @@ Route::group(['middleware' => ['cors']], function() {
     Route::get('/angular', [DriversPayableTimeController::class, 'angular' ]);
     Route::get('/angular_order/{order}', [DriversPayableTimeController::class, 'angularOrder' ]);
 });
+# for phpunit testing 
+Route::post('/store', [DriversPayableTimeController::class, 'store']);
+Route::get('/store', [DriversPayableTimeController::class, 'store']);
