@@ -16,6 +16,9 @@
 #### http://localhost:83/angular_order/desc
 - page: with a list of calculated total time of trips:
 - ![изображение](https://github.com/vadimlvov71/drivers_trips_laravel10/assets/57807117/4d368930-faaf-49f9-ad73-2d43e6421449)
+### Install:
+- create database:  drivers_trip
+- make migration for 2024_01_03_105636_create_drivers_trips_table.php
 
 
 
