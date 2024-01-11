@@ -19,6 +19,10 @@
 ### Install:
 - create database:  drivers_trip
 - make migration for 2024_01_03_105636_create_drivers_trips_table.php
+### php artisan test
+- php artisan test
+- 
+![изображение](https://github.com/vadimlvov71/drivers_trips_laravel10/assets/57807117/76a9a4e5-d7f0-4ef5-854b-1ac652f3ee80)
 
 
 
