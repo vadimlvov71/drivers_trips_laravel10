@@ -53,24 +53,34 @@ class DriversPayableTimeController extends Controller
 
         return $users;
     }
-    public function getTotalMinutesWithPassenger($orderBy = "DESC")
+    /**
+     * count distinct driver`s trips minutes
+     * @param string $orderBy
+     * 
+     * @return array
+     */
+    public function getTotalMinutesWithPassenger(string $orderBy = "DESC"): array
     {
        
-       $drivers = DB::table('drivers_trips')
-            ->select(DB::raw('driver_id, sum(TIMESTAMPDIFF(minute, pickup, dropoff)) as total_minutes'))
-             //->where('status', '<>', 1)
-            ->groupBy('driver_id')
-            ->orderBy('total_minutes', $orderBy)
-            ->get();
-        $array = [];
-        $rusult = [];
-        foreach ($drivers as $driver) {
-            $array["driver_id"] = $driver->driver_id;
-            $array["total"] = $driver->total_minutes;
-            
-            $rusult[] = $array;
-        }
-        return $rusult;
+        $statement = "
+        select sum(TIMESTAMPDIFF(minute, trip_start, trip_end)) as total_minutes, t1.driver_id
+        from
+        (
+        select DISTINCT pickup as trip_start , driver_id
+        from drivers_trips
+        ) as t1
+        JOIN
+        (
+        select DISTINCT dropoff as trip_end, driver_id, pickup
+        from drivers_trips
+        ) as t2
+        ON t1.trip_start = t2.pickup
+        AND t1.driver_id = t2.driver_id
+        GROUP BY t1.driver_id
+        ";
+        $drivers_trips_total = DB::select($statement);
+         
+        return $drivers_trips_total;
     }
     /**
      * @param string $order
@@ -82,9 +92,12 @@ class DriversPayableTimeController extends Controller
         $drivers = $this->getTotalMinutesWithPassenger($order);
         return response()->json($drivers);
     }
+    /**
+     * @return json
+     */
     public function angular()
     {
-       $drivers = $this->getTotalMinutesWithPassenger();
+        $drivers = $this->getTotalMinutesWithPassenger();
         return response()->json($drivers);
     }
 }
