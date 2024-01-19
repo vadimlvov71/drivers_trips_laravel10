@@ -5,7 +5,22 @@
 
 - php 8.2.
 - Mysql.
-
+```
+        select sum(TIMESTAMPDIFF(minute, trip_start, trip_end)) as total_minutes, t1.driver_id
+        from
+        (
+        select DISTINCT pickup as trip_start , driver_id
+        from drivers_trips
+        ) as t1
+        JOIN
+        (
+        select DISTINCT dropoff as trip_end, driver_id, pickup
+        from drivers_trips
+        ) as t2
+        ON t1.trip_start = t2.pickup
+        AND t1.driver_id = t2.driver_id
+        GROUP BY t1.driver_id
+```
 ### routes:
 
 #### http://localhost/
