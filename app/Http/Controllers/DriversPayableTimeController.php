@@ -5,26 +5,47 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DriversTrips;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 
+/**
+* @author Vadim Podolyan <vadim.podolyan@gmail.com>
+
+ * via form a csv file is uploaded and data inserted in database
+ * and counting drivers trip minutes
+ */
 class DriversPayableTimeController extends Controller
 {
+     
+    /**
+     * entry point - form with uploading
+     */
     public function index()
     {
         return view('drivers.index');
     }
 
+
+    /**
+     * @param Request $request
+     * 
+     * @return [view]
+     */
     public function uploadFile(Request $request)
     {
         $file = $request->file('image');
-   
-        //Move Uploaded File
         $destinationPath = 'uploads';
         $file->move($destinationPath, $file->getClientOriginalName());
         $drivers = $this->readCsv();
         $this->store($drivers);
         return view('drivers.times', compact('drivers'));
     }
-    public function store($drivers = [])
+
+    /**
+     * @param array $drivers
+     * insert data to database
+     * @return void
+     */
+    public function store(array $drivers = []): void
     {
         
         foreach($drivers as $key => $driver_trip) {
@@ -34,8 +55,11 @@ class DriversPayableTimeController extends Controller
             $trips->dropoff = $driver_trip['dropoff']; 
             $trips->save();  
         }
-        //return redirect()->back()->with('status','Student Added Successfully');
     }
+    
+    /**
+     * read csv file
+     */
     public function readCsv()
     {
         //$filePath = storage_path('uploads/trip.csv');
@@ -66,7 +90,7 @@ class DriversPayableTimeController extends Controller
         select sum(TIMESTAMPDIFF(minute, trip_start, trip_end)) as total_minutes, t1.driver_id
         from
         (
-        select DISTINCT pickup as trip_start , driver_id
+        select DISTINCT pickup as trip_start, driver_id
         from drivers_trips
         ) as t1
         JOIN
@@ -85,17 +109,17 @@ class DriversPayableTimeController extends Controller
     /**
      * @param string $order
      * 
-     * @return json
+     * @return JsonResponse
      */
-    public function angularOrder($order)
+    public function angularOrder($order): JsonResponse
     {
         $drivers = $this->getTotalMinutesWithPassenger($order);
         return response()->json($drivers);
     }
     /**
-     * @return json
+     * @return JsonResponse
      */
-    public function angular()
+    public function angular(): JsonResponse
     {
         $drivers = $this->getTotalMinutesWithPassenger();
         return response()->json($drivers);
