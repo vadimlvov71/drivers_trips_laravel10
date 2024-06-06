@@ -4,7 +4,7 @@
 
 
 - php 8.2.
-- Mysql.
+- Mysql. DISTINCT is used because one driver has several passangers as "pickup" but one trip, so a trip can have several pickups :)
 ```
         select sum(TIMESTAMPDIFF(minute, trip_start, trip_end)) as total_minutes, t1.driver_id
         from
